@@ -4,49 +4,74 @@ import { Observable, map } from "rxjs";
 import { BaseModel } from "../models/views/core/baseModel";
 import { AbstractFactory } from "../models/abstract-factory/abstractFactory";
 
-@Injectable({
-    providedIn: 'root',
-})
-export class TestService<T> {
+@Injectable()
+export class TestService {
 
     private baseUrl: string =  'http://api.snappay.webuildit.tech/';
-    private _path: string = '';
-    private _factory : AbstractFactory<T> | null = null;
 
-    public set factory(v : AbstractFactory<T>) {
-        this._factory = v;
-    }
-
-    public set path(value : string) {
-        this._path = value;
-    }
-    
 
     constructor(private httpClient: HttpClient ){
 
     }
 
-    get(): Observable<T[]> {
-        return this.httpClient.get(this.baseUrl + this._path).pipe(
+    get<T>(factory: AbstractFactory<T>, path: string): Observable<T[]> {
+        return this.httpClient.get(this.baseUrl + path).pipe(
             map((responseData:any)=>{
                 const response: T[] = [];
                 for(let resp of responseData.data) {
-                    response.push(this._factory!.createModel(resp))
+                    response.push(factory!.createModel(resp))
                 }
                 return response;
             })
         )
     }
 
-    getPaginated(): Observable<T>{
-        return this.httpClient.get(this.baseUrl + this._path).pipe(
+    getPaginated<T>(factory: AbstractFactory<T>, path: string): Observable<T>{
+        return this.httpClient.get(this.baseUrl + path).pipe(
             map((responseData:any)=>{
                 console.log(responseData);
-                const response: T = this._factory!.createModel(
+                const response: T = factory!.createModel(
                     responseData
                 )
                 return response;
             })
         )
     }
+
+    post<T, N>(factory: AbstractFactory<T>, path: string, body: N): Observable<T> {
+      return this.httpClient.post(this.baseUrl + path, body).pipe(
+        map((responseData:any)=>{
+          const response: T = factory!.createModel(
+            responseData
+          );
+          return response
+        })
+      )
+    }
+
+    put<T, N>(factory: AbstractFactory<T>, path: string, body: N): Observable<T> {
+      return this.httpClient.put(this.baseUrl + path, body).pipe(
+        map((responseData:any)=>{
+          const response: T = factory!.createModel(
+            responseData
+          );
+          return response
+        })
+      )
+    }
+
+
+    patch<T, N>(factory: AbstractFactory<T>, path: string, body: N): Observable<T> {
+      return this.httpClient.patch(this.baseUrl + path, body).pipe(
+        map((responseData:any)=>{
+          const response: T = factory!.createModel(
+            responseData
+          );
+          return response
+        })
+      )
+
+  }
 }
+
+

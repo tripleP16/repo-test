@@ -15,20 +15,8 @@ import { PaginationFactory } from './models/concrete-factory/core/pagination-fac
 export class AppComponent {
   title = 'angular-test';
   constructor(
-    private readonly testService: TestService<Rol>,
-    private readonly productService: TestService<Products>,
-    private readonly paginatedService: TestService<Pagination<Products>>
+    private readonly testService: TestService,
   ){
-    this.testService.factory = new RolFactory();
-    this.testService.path = 'roles'
-
-    this.productService.factory = new ProductsFactory();
-    this.productService.path = 'products';
-
-
-    this.paginatedService.factory = new PaginationFactory<Products>(new ProductsFactory());
-    this.paginatedService.path = 'products';
-
   }
 
   ngOnInit(){
@@ -41,10 +29,6 @@ export class AppComponent {
     // })
 
 
-    this.paginatedService.getPaginated().subscribe((product: Pagination<Products>)=>{
-      console.log(product.meta.limit)
-      console.log(product.data);
-    })
 
   }
 }
